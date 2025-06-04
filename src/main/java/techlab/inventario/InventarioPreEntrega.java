@@ -94,16 +94,17 @@ public class InventarioPreEntrega extends Inventario{
   }
 
   @Override
-  public Producto buscarProducto(String nombreProducto) {
+  public List<Producto> buscarProductoPorNombre(String nombreProducto) {
     if (nombreProducto == null || nombreProducto.trim().isEmpty()) {
       return null;
     }
+    List<Producto> productosSeleccionados = new ArrayList<>();
     for (Producto producto : listaProductos) {
       if (producto.getNombre().toLowerCase().contains(nombreProducto.toLowerCase().trim())) {
-        return producto;
+        productosSeleccionados.add(producto);
       }
     }
-    return null;
+    return productosSeleccionados;
   }
 
   @Override
@@ -112,10 +113,11 @@ public class InventarioPreEntrega extends Inventario{
   }
 
   public void simularPrecargaDeProductosTest() {
-    this.agregarProducto(new Producto("Micrófono", 2000, 10));
-    this.agregarProducto(new Producto("Monitor", 1000, 10));
+    this.agregarProducto(new Producto("Micrófono gamer", 2000, 10));
+    this.agregarProducto(new Producto("Monitor gamer", 1000, 10));
     this.agregarProducto(new Producto("Teclado mecánico", 1500, 15));
     this.agregarProducto(new Producto("Mouse gamer", 1200, 20));
+    /*
     this.agregarProducto(new Producto("Laptop", 15000, 5));
     this.agregarProducto(new Producto("Tablet", 8000, 7));
     this.agregarProducto(new Producto("Disco duro externo", 2500, 12));
@@ -132,5 +134,7 @@ public class InventarioPreEntrega extends Inventario{
     this.agregarProducto(new Producto("Estabilizador de voltaje", 1100, 10));
     this.agregarProducto(new Producto("Cable HDMI", 300, 30));
     this.agregarProducto(new Producto("Panel táctil USB", 2000, 5));
+
+     */
   }
 }

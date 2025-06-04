@@ -23,6 +23,7 @@ public class Pedido {
   public double calcularCostoTotal() {
     return 2.3;
   }
+//return String.format("[%03d] %-20s   [%.2f] [%d]", this.id, this.nombre, this.precio, this.stock);
 //"[%03d] %-20s [%d]"
   public void mostrarPedido() {
     System.out.printf("""

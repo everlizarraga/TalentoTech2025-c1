@@ -12,13 +12,17 @@ public class ItemPedido {
   }
 
   public void mostrarInfo() {
-    System.out.println("CANT  | [ProdID] PRODUCTO");
-
+    //System.out.println("CANT  | [ProdID] PRODUCTO");
+    System.out.printf("""
+                CANT: %s
+                PorodID: %s
+                Producto: %s
+                """, this.getCantidad(), this.getId(), this.getNombre());
   }
 
   @Override
   public String toString() {
-    return String.format("[%03d] %-20s [%d]", this.getId(), this.getNombre(), this.getCantidad());
+    return String.format("[%03d] %-20s [%d] %.2f", this.getId(), this.getNombre(), this.getCantidad(), this.getPrecio());
   }
 
   public int getId() {
@@ -35,5 +39,9 @@ public class ItemPedido {
 
   public void setCantidad(int cantidad) {
     this.cantidad = cantidad;
+  }
+
+  public double getPrecio() {
+    return (double)this.getCantidad()*this.producto.getPrecio();
   }
 }
