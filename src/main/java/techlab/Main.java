@@ -127,7 +127,35 @@ public class Main {
 
   private static void eliminarProducto() {
     Utils.mostrarTituloPersonalizadoPorConsola("ELIMINAR PRODUCTO");
-
+    String subMenu = """
+        --------------------------------
+        Buscar Producto a Elminar:
+        """;
+    System.out.println(subMenu);
+    Producto productoSeleccionado = interfazDeBuscarProducto();
+    if(productoSeleccionado != null) {
+      subMenu = """
+          --------------------------
+          1) Eliminar Producto
+          2) Cancelar
+          --------------------------""";
+      int opcionSeleccionada = MenuControl.seleccionadorDeOpciones(subMenu, 1, 2);
+      if(opcionSeleccionada == 1) {
+        System.out.println("--------------------------------------");
+        System.out.println("Estas seguro de eliminar el producto:");
+        productoSeleccionado.mostrarInfo2();
+        subMenu = """
+            --------------------------
+            1) Si (Eliminar)
+            2) No (Cancelar)
+            --------------------------""";
+        int confirmacion = MenuControl.seleccionadorDeOpciones(subMenu, 1, 2);
+        if(confirmacion == 1) {
+          inventario.eliminarProducto(productoSeleccionado.getId());
+          System.out.println("PRODUCTO ELIMINADO !!!");
+        }
+      }
+    }
   }
 
   private static void crearPedido() {}
@@ -207,7 +235,6 @@ public class Main {
   private static Producto interfazDeBuscarProducto() {
     Producto productoSeleccionado = null;
     String subMenu = """
-        
         ---------------------------
         BUSCAR PRODUCTO
         1) Buscar por ID
