@@ -22,7 +22,12 @@ public class ItemPedido {
 
   @Override
   public String toString() {
-    return String.format("[%03d] %-20s [%d] %.2f", this.getId(), this.getNombre(), this.getCantidad(), this.getPrecio());
+    return String.format("[%03d] %-20s [%d] %.2f  $%.2f",
+        this.getId(),
+        this.getNombre(),
+        this.getCantidad(),
+        this.getPrecio(),
+        this.getCantidad()*this.getPrecio());
   }
 
   public int getId() {
@@ -43,5 +48,9 @@ public class ItemPedido {
 
   public double getPrecio() {
     return (double)this.getCantidad()*this.producto.getPrecio();
+  }
+
+  public Producto getProducto() {
+    return this.producto;
   }
 }

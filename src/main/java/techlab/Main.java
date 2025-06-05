@@ -1,16 +1,20 @@
 package techlab;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
 import techlab.consola.MenuControl;
 import techlab.inventario.Inventario;
 import techlab.inventario.InventarioPreEntrega;
 import techlab.pedidos.ItemPedido;
+import techlab.pedidos.Pedido;
 import techlab.productos.Producto;
 import techlab.utils.Utils;
 
 public class Main {
   private static Inventario inventario = new InventarioPreEntrega();
+  private static List<Pedido> listaPedidos = new ArrayList<>();
   public static void main(String[] args) {
     inventario.simularPrecargaDeProductosTest();
     Scanner sc = new Scanner(System.in);
@@ -158,8 +162,136 @@ public class Main {
     }
   }
 
-  private static void crearPedido() {}
-  private static void listarPedidos() {}
+  private static void crearPedido() {
+    Utils.mostrarTituloPersonalizadoPorConsola("CREAR UN NUEVO PEDIDO");
+    List<ItemPedido> listaProvicionalDeItemsSeleccionados = new ArrayList<>();
+    int opcionElegida = 0;
+    boolean key = true;
+    String menuListaVacia = """
+        -----------------------
+        1) Agregar Producto
+        2) Cancelar Pedido
+        -----------------------""";
+    String menuListaConElementos = """
+        -----------------------
+        1) Agregar Producto
+        2) Ver Productos Seleccionados
+        3) Guardar Pedido
+        4) Cancelar Pedido
+        -----------------------""";
+    do {
+      if(listaProvicionalDeItemsSeleccionados.isEmpty()) {
+        opcionElegida = MenuControl.seleccionadorDeOpciones(menuListaVacia, 1, 2);
+        switch (opcionElegida) {
+          case 1:
+            interfazAgregarItemProducto(listaProvicionalDeItemsSeleccionados);
+            break;
+          case 2:
+            key = false;
+            break;
+          default:
+            System.out.println("Opcion Inesperada");
+        }
+      } else {
+        opcionElegida = MenuControl.seleccionadorDeOpciones(menuListaConElementos, 1, 4);
+        switch (opcionElegida) {
+          case 1:
+            interfazAgregarItemProducto(listaProvicionalDeItemsSeleccionados);
+            break;
+          case 2:
+            //Agregar indices de tabla
+            //"[%03d] %-20s [%d] %.2f  $%.2f"
+            System.out.println("[COD] [Nombre Producto]   [Cant] [$/u] [SubTotal]");
+            System.out.println("-------------------------------------------------");
+            for(ItemPedido unItem : listaProvicionalDeItemsSeleccionados){
+              System.out.println(unItem.toString());
+            }
+            double total = listaProvicionalDeItemsSeleccionados.stream()
+                    .map(x -> x.getPrecio()*x.getCantidad())
+                    .reduce(0.0, (a,b) -> a+b);
+            System.out.println("-----------------");
+            System.out.printf("Total: $%.2f\n", total);
+            break;
+          case 3:
+            Pedido unPedido = new Pedido();
+            for(ItemPedido unItem : listaProvicionalDeItemsSeleccionados) {
+              Producto unProducto = unItem.getProducto();
+              try {
+                unProducto.setStock(unProducto.getStock() - unItem.getCantidad());
+                unPedido.agregarProductoAlPedido(unProducto, unItem.getCantidad());
+              } catch (Exception e) {
+                System.out.println(e.getMessage());
+              }
+            }
+            listaPedidos.add(unPedido);
+            System.out.println("Pedido Guardado Exitosamente !!!");
+            key = false;
+            break;
+          case 4:
+            key = false;
+            break;
+          default:
+            System.out.println("Opcion Inesperada");
+        }
+      }
+
+    } while(key);
+
+  }
+
+  private static void interfazAgregarItemProducto(List<ItemPedido> listaDeItemsDelPedido) {
+    Producto unProducto = interfazDeBuscarProducto();
+    if(unProducto != null) {
+      if(unProducto.getStock() > 0) {
+        String subMenu = """
+          ---------------------
+          1) Confirmar Selección
+          2) Cancelar Selección
+          ---------------------""";
+        int opcionElegida = MenuControl.seleccionadorDeOpciones(subMenu, 1, 2);
+        switch (opcionElegida) {
+          case 1:
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Ingresar Cantidad: ");
+            int cantidadIngresada = Integer.parseInt(sc.nextLine());
+            // Contorlando Cantidad
+            int cantidadResidual =
+                unProducto.getStock() -
+                cantidadIngresada -
+                listaDeItemsDelPedido.stream()
+                    .filter(x -> x.getId() == unProducto.getId())
+                    .map(x -> x.getCantidad())
+                    .reduce(0, (a,b) -> a+b);
+            if(cantidadResidual >= 0) {
+              ItemPedido nuevoItem = new ItemPedido(unProducto, cantidadIngresada);
+              listaDeItemsDelPedido.add(nuevoItem);
+            } else {
+              System.out.println("No hay stock suficiente !!!");
+            }
+            break;
+          default:
+            System.out.println("Selección cancelada");
+        }
+      } else {
+        System.out.println("No hay stock del producto seleccionado");
+      }
+
+    }
+  }
+
+  private static void listarPedidos() {
+    Utils.mostrarTituloPersonalizadoPorConsola("PEDIDOS GUARDADOS");
+
+    for (Pedido unPedido : listaPedidos) {
+      unPedido.mostrarPedido();
+    }
+
+    String subMenu = """
+        --------------------------------
+        1) Regresar al Menu Principal
+        --------------------------------""";
+    MenuControl.seleccionadorDeOpciones(subMenu, 1, 1);
+  }
 
   private static void interfazActualizarProducto(Producto unProducto) {
     Scanner sc = new Scanner(System.in);

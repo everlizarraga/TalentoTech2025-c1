@@ -21,7 +21,9 @@ public class Pedido {
   }
 
   public double calcularCostoTotal() {
-    return 2.3;
+    return listaDeItems.stream()
+        .map(x -> x.getCantidad()*x.getPrecio())
+        .reduce(0.0, (a,b) -> a+b);
   }
 //return String.format("[%03d] %-20s   [%.2f] [%d]", this.id, this.nombre, this.precio, this.stock);
 //"[%03d] %-20s [%d]"
@@ -34,6 +36,7 @@ public class Pedido {
     for (ItemPedido item : listaDeItems) {
       System.out.println(item.toString());
     }
+    System.out.printf("\nCosto Total: $ %.2f\n", this.calcularCostoTotal());
     System.out.println("""
         -------------------------------------
         """);
